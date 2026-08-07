@@ -55,6 +55,33 @@ sed [-e <script>] [文件(支持管道输入)]
 - 先匹配`^.*Disconnected from (invalid |authenticating )?user (.*)[0-9.]+ port [0-9]+( \[preauth\])?$`
 - 这段内容替换为将第二个匹配组(即用户名)
 
+# tr
+和sed相对, sed是逐行+正则, 而tr是逐字符翻译(translate)的流式工具, 只操作标准输入输出, 不吃文件参数
+
+使用方法: 
+```shell
+tr [OPTIONS] <SET1> [<SET2>]
+```
+| 常用形式 | 说明 |
+| --- | --- |
+| `tr SET1 SET2` | 将SET1中的字符逐个映射为SET2中对应位置的字符 |
+| `tr -d SET1` | 删除SET1中出现过的所有字符 |
+| `tr -s SET1` | 压缩, 连续重复的字符只保留一个 |
+
+常用字符集合: 字面字符 `'a-z'`/`'A-Z'`/`'0-9'`, 转义符 `\n`/`\t`, 字符类 `[:lower:]`/`[:upper:]`/`[:digit:]`/`[:space:]`/`[:alpha:]`/`[:print:]` 等
+
+一些例子: 
+- 大小写转换: `echo "Hello" | tr 'a-z' 'A-Z'` → `HELLO`
+- 去掉Windows文本的`\r`, 修复CRLF换行: `tr -d '\r' < windows.txt > unix.txt`
+- 压缩多个空格: `echo "a  b   c" | tr -s ' '` → `a b c`
+- 把PATH的冒号分隔符换成换行, 逐行打印: `echo "$PATH" | tr ':' '\n'`
+- `-c`取补集, 把非小写字母的字符全部换成换行, 用于提取单词: `echo "hello, world! 123" | tr -c 'a-z' '\n'`
+
+注意: 
+- 不能替换"字符串", `tr 'abc' 'xyz'`是a→x, b→y, c→z的逐字符映射, 替换子串请用`sed 's/.../.../g'`
+- 两个集合按位置一一对应, SET2比SET1短时用最后一个字符补齐
+- 范围如`a-z`依赖字符编码顺序, 处理非ASCII文本时要留意locale
+
 # sort 
 就是排序, 默认输出为由小到大
 
