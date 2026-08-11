@@ -68,7 +68,10 @@ tr [OPTIONS] <SET1> [<SET2>]
 | `tr -d SET1` | 删除SET1中出现过的所有字符 |
 | `tr -s SET1` | 压缩, 连续重复的字符只保留一个 |
 
-常用字符集合: 字面字符 `'a-z'`/`'A-Z'`/`'0-9'`, 转义符 `\n`/`\t`, 字符类 `[:lower:]`/`[:upper:]`/`[:digit:]`/`[:space:]`/`[:alpha:]`/`[:print:]` 等
+常用字符集合: 
+- 字面字符 `'a-z'`/`'A-Z'`/`'0-9'`
+- 转义符 `\n`/`\t`
+- 字符类 `[:lower:]`/`[:upper:]`/`[:digit:]`/`[:space:]`/`[:alpha:]`/`[:print:]` 等
 
 一些例子: 
 - 大小写转换: `echo "Hello" | tr 'a-z' 'A-Z'` → `HELLO`
