@@ -132,3 +132,43 @@ total <文件夹总大小, 以-h的大小形式表示>
 - `source`/`.`: 要在当前进程执行, 这样脚本设置的变量和 cd 才对 shell 生效
 - `exit`: 要终止当前 shell 进程本身
 - `jobs`/`fg`/`bg`: 要操作当前 shell 管理的子进程
+
+## curl 与 wget: 获取网页内容
+
+*curl 是"传输工具", 默认把内容输出到标准输出; wget 是"下载器", 默认存成文件. 两者都能下载文件, 但"拿到内容再加工"用 curl 更顺手*
+
+wget 的典型用法: 
+- `wget [-c] [-O file] <URL>`: 下载文件, 以远程文件名(`-O`指定本地文件名)保存在当前目录, `-c`断点续传
+- `wget --post-data "a=1" <URL>`: 发送 POST 数据
+- `wget -r -np <URL>`: 递归镜像整个网站
+
+curl 的典型用法: 
+- `curl -L <URL>`: 跟随重定向, 内容打到标准输出(默认不跟重定向, 必须显式加 `-L`)
+- `curl -L -o file <URL>`: 跟随重定向并保存为指定文件
+- `curl -O <URL>`: 以远程文件名保存
+- `curl -s <URL>`: 不显示进度条
+- `curl -C - <URL>`: 断点续传
+- `curl -d "a=1" <URL>`: 发送 POST 数据
+- `curl -I <URL>`: 只看响应头
+
+curl可以精细控制请求(方法/请求头/cookie/JSON body), 输出可管道 jq/grep 等程序
+
+## jq: 从 JSON 中提取数据与查看结构
+
+jq 吃进一个 JSON 值, 吐出零个或多个 JSON 值, 内部利用管道把上一步的输出逐个交给下一步
+
+练习解答：
+```shell
+curl -sL https://microsoftedge.github.io/Demos/json-dummy-data/64KB.json | jq '.[] | select(.version>6) | .name'
+```
+
+逐段拆解: 
+- `.[]`: 拆开数组, 把每个元素逐个输出(作用于对象时则是遍历所有值)
+- `select(条件)`: 条件过滤
+- `.version>6`: 取当前对象的 version 字段做数值比较
+- `.name`: 取 name 字段
+
+注意: 若字段是字符串, `>` 按字典序比较, 数字与字符串直接比较会报错, 需先转数字: `.version | tonumber > 6`
+
+- `jq .`: 恒等过滤器, 美化打印整个文档, 看整体结构
+- `jq '.[0]'`: 只看第一个元素, 快速了解一条记录的形状
